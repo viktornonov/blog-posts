@@ -13,5 +13,7 @@ def first_post
 end
 ```
 
+<script src="https://gist.github.com/4505639.js?file=macroBuild.scala" type="text/javascript"></script>
+
 ![image to check](https://raw.githubusercontent.com/viktornonov/blog-posts/master/yo-yo/subset.jpg)
 
