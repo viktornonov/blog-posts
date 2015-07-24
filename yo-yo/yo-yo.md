@@ -12,3 +12,6 @@ def first_post
   puts "comes from github in markdown"
 end
 ```
+
+![image to check](https://raw.githubusercontent.com/viktornonov/blog-posts/master/yo-yo/subset.jpg)
+
