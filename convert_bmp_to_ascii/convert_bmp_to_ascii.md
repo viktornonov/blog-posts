@@ -212,9 +212,11 @@ int extract_pixel(unsigned char* byte_array, int scan_line_size_in_bytes,
 }
 ```
 
+```
 scan_line_size_in_bytes = 4 (bytes)
 row = 0
 col = 1
+```
 
 1. Find the byte that stores the pixel by dividing col by 8. (pixels 0-7 are stored in the first byte, pixels 8-15 ares stored in the second byte, etc.)
 byte_array_index = 0
@@ -227,6 +229,18 @@ when we want col 1 we need the mask 0100 0000 (shifted 6 times)
 etc.
 
 3. Compare the current byte with mask by & (bitwise AND) will give the pixel value
+
+### Displaying the image
+After we read the pixel array we can choose a character which will represent white and one for black and just display them. Notice that the pixel array is stored upside down, so if you want to get image to be upwards then you should start reading the pixel array from bottom up.
+
+Here's an example conversion of the following image:
+
+![banksy](https://raw.githubusercontent.com/viktornonov/blog-posts/master/convert_bmp_to_ascii/banksy.bmp)
+
+Screenshot of the result:
+![bansky ascii](https://raw.githubusercontent.com/viktornonov/blog-posts/master/convert_bmp_to_ascii/ascii.png)
+
+
 
 * * *
 
