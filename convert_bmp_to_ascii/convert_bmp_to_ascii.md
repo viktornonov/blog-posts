@@ -10,8 +10,11 @@ It has 4 main parts:
 
 ### Example (2x2 BMP Image (1 bit per pixel encoded))
 1 bit per pixel encoded bmp images use 1 bit to represent each pixel in the image, meaning that a pixel can be either 0 or 1. (black or white).
+
 That's the __zoomed__ version of the image that's the example is for:
-![Zoomed 2x2 image](https://raw.githubusercontent.com/viktornonov/blog-posts/master/bmp_format/2x2zoomed.png)
+
+![Zoomed 2x2 image](https://raw.githubusercontent.com/viktornonov/blog-posts/master/convert_bmp_to_ascii/zoomed2x2.png)
+
 Simple 2x2 bmp image with white and black pixel on the top row and black and white pixel on the bottom row.
 
 Below you can see hexdump of the image. All the values are in hexadecimal(thank you cpt obvious). Also they are in LSB (least significant byte first), which means 48 00 00 00 should be read as 00 00 00 48:
@@ -29,8 +32,11 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 ```
 
 424d      - ASCII codes of B and M. Every BMP file that you create start with these two symbols, unless you use OS/2.
+
 4800 0000 - The size of the file in bytes -> 72 bytes.
+
 0000 0000 - Reserved for the app that creates the images.
+
 3e00 0000 - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel array starts on the 62nd byte of the file.
 
 * DIB header (Bitmap information header):
@@ -120,7 +126,7 @@ Example:
 byte_array = { 0x00, 0x2E, 0x00, 0x00, 0x00, 0x00 }
 start_position = 1
 length = 4
-``
+```
 
 *slice* will become { 0x2E, 0x00, 0x00, 0x00 }
 by calling *lsb_to_int* with *slice* will get the decimal value of 0x2E (46)
@@ -139,6 +145,7 @@ int lsb_to_int(unsigned char* lsb_array)
 ```
 
 Here's an example of this function:
+
 lsb_array = { 'FF', '10', '01', '0F' }
 
 ```hex
@@ -210,7 +217,7 @@ You don't.
 
 #### Source files
 You can find the full source here.
-[Bmp Reader](https://github.com/experiments/bmp_reader)
+[Bmp Reader](https://github.com/viktornonov/experiments/tree/master/bmp_reader)
 And don't forget to unstar all of my repos, if you stared them before.
 
 #### References:
