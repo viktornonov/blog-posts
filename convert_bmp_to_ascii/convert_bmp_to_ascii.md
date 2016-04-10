@@ -87,9 +87,9 @@ The bits representing the bitmap pixels are organized in rows. The size of each 
 
 In the example image you can see that the data that means something is placed in the first 2 bits of each row:
 
-The bottom row - 4000 0000, which in binary is __01__00 0000 0000 0000 0000 0000 0000 0000
+The bottom row - *4000 0000*, which in binary is *01*00 0000 0000 0000 0000 0000 0000 0000
 
-The top row - 8000 0000, in binary is __10__00 0000 0000 0000 0000 0000 0000 0000 0000
+The top row - *8000 0000*, in binary is *10*00 0000 0000 0000 0000 0000 0000 0000 0000
 
 Bits that follow the first two are all padding.
 
@@ -225,8 +225,7 @@ etc.
 You don't.
 
 #### Source files
-You can find the full source here.
-[Bmp Reader](https://github.com/viktornonov/experiments/tree/master/bmp_reader)
+You can find the full source here: [Bmp Reader](https://github.com/viktornonov/experiments/tree/master/bmp_reader).
 And don't forget to unstar all of my repos, if you stared them before.
 
 #### References:
