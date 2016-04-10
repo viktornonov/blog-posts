@@ -43,7 +43,7 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 2800 0000 - The size of the DIB header = 28 = 40 bytes
 0200 0000 - Width in pixels = 2px
 0200 0000 - Height in pixels = 2px
-0100      - Number of planes = 1px
+0100      - Number of planes = 1
 0100      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
 0000 0000 - Compression method. 0 means none
 0a00 0000 - Size of the pixel array = 10 bytes
@@ -68,21 +68,152 @@ The colors are represented in the following format, which is in [little endian o
 ```
 4000 0000 8000 0000 0000
 ```
-The pixel array presents the actual pixel data. The image in the example is with color depth 1bpp, so every pixel in the pixel array will show the index of the color in the color table above. 0 will mean the color with index 0 in the color table, which means white and 1 will mean the second color in the color table - black.
+The pixel array presents the actual pixel data. The image in the example is with color depth 1bpp, so every pixel in the pixel array will show the index of the color in the color table above. 0 will mean the color with index 0 in the color table, which is white and 1 will mean the second color in the color table - black.
+
 The pixels in the array are stored upside down (starts from bottom left corner (left-to-right) (bottom-to-top))
+
 The bits representing the bitmap pixels are organized in rows. The size of each row is rounded up to a multiple of 4 bytes (a 32-bit DWORD) by padding, which are 0s normally.
+
 In the example image you can see that the data that means something is placed in the first 2 bits of each row:
 The bottom row - 4000 0000, which in binary is __01__00 0000 0000 0000 0000 0000 0000 0000
 The top row - 8000 0000, in binary is __10__00 0000 0000 0000 0000 0000 0000 0000 0000
+
 Bits that follow the first two are all padding.
 The bottom row shows __01__ in first two bits which represents color with index 0 in the color pallette (white) and color with index 1 in the color pallette (Black)
 
 * * *
 
-### Why do you need to know all those things?
+## Let's get down to bussiness
+
+In case to implement an app that can read 1 bit BMP file I'll need to implement the following functionalities:
+
+### Reading the BMP file header
+Actually I don't need anything from the the file header.
+
+### Reading the DIP header
+I need to extract the width, height, the size of the pixel array, so I can allocate memory. I'll use the following structure to keep the DIP header:
+
+```c
+struct DibHeader {
+    int size;
+    int img_width;
+    int img_height;
+    int pixel_array_size;
+};
+```
+
+All the values above are taking 4 bytes in the file, so I'll use this function to extract each value and convert it to int (it's 4 bytes on GCC5). I'll use __unsigned char__ to read the bytes, because it is 8 bits(1 byte) and it handles the bit shifting.
+
+```c
+int extract_value_from_byte_array(unsigned char* byte_array, int start_position, int length) {
+    unsigned char slice[length];
+    for(int i = 0; i < length; i++) {
+        slice[i] = byte_array[start_position + i];
+    }
+    return lsb_to_int(slice);
+}
+```
+
+Example:
+
+```
+byte_array = { 0x00, 0x2E, 0x00, 0x00, 0x00, 0x00 }
+start_position = 1
+length = 4
+``
+
+*slice* will become { 0x2E, 0x00, 0x00, 0x00 }
+by calling *lsb_to_int* with *slice* will get the decimal value of 0x2E (46)
+
+
+This is the implementation of the *lsb_to_int* function.
+
+```c
+int lsb_to_int(unsigned char* lsb_array)
+{
+    int result;
+    result = ((int)lsb_array[0]) + (((int)lsb_array[1]) << 8) +
+             (((int)lsb_array[2]) << 16) + (((int)lsb_array[3]) << 24);
+    return result;
+}
+```
+
+Here's an example of this function:
+lsb_array = { 'FF', '10', '01', '0F' }
+
+```hex
+  00 00 00 FF # == (int) lsb_array[0]
+  00 00 10 00 # == ((int)lsb_array[1] << 8)
+  00 01 00 00 # == ((int)lsb_array[1] << 16)
++ 0F 00 00 00 # == ((int)lsb_array[1] << 24)
+--------------
+  OF 01 10 FF # normal order
+```
+
+### Reading the pixel array
+
+Real deal here. The tricky thing will be to extract the bits from the bytes. In order to do that I have to implment something that will read the pixel array line by line ([scan line](https://en.wikipedia.org/wiki/Scan_line) by scan line).
+
+As I said earlier the bits representing the bitmap pixels are packed in rows. Each row's size is rounded up to a multiple of 4 bytes by padding (in most cases is 0x00).
+
+Example:
+For a pixel array of a 1 bpp BMP with width 2px and height 2px we'll need two rows 2 bits long each, but with <span style="color: blue">the padding</span>, the pixel array is a bit longer than that:
+
+```asm
+0x40 0x00 0x00 0x00 #Notice that every digit here is in hexadecimal, which means that 0x40 is 0100 000 in binary
+0x80 0x00 0x00 0x00
+```
+
+I don't need the padding, so I should find a way to extract the meaningful data from the pixel array. Let's say I want to extract the second pixel on the first scan line (it is one). Here's the function that does that:
+
+```c
+int extract_pixel(unsigned char* byte_array, int scan_line_size_in_bytes,
+                  int row, int col) {
+    int byte_array_index;
+    if (row == 0) {
+        byte_array_index = col / 8;
+    }
+    else {
+        byte_array_index = (scan_line_size_in_bytes * row) + (col/8);
+    }
+    unsigned char current_byte_element = byte_array[byte_array_index];
+    unsigned char pixel_mask = 1 << (7 - (col % 8));
+    if((current_byte_element & pixel_mask) == 0) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+```
+
+scan_line_size_in_bytes = 4 (bytes)
+row = 0
+col = 1
+
+1. Find the byte that stores the pixel by dividing col by 8. (pixels 0-7 are stored in the first byte, pixels 8-15 ares stored in the second byte, etc.)
+byte_array_index = 0
+
+2. Extract the specific pixel's bit by using bitmask (pixel_mask) and &
+This is the mask:
+1 << (7 - (col % 8));
+when we want col 0 we need the mask 1000 0000 (shifted 7 times)
+when we want col 1 we need the mask 0100 0000 (shifted 6 times)
+etc.
+
+3. Compare the current byte with mask by & (bitwise AND) will give the pixel value
+
+* * *
+
+#### Why do you need to know all those things?
 You don't.
 
-### References:
+#### Source files
+You can find the full source here.
+[Bmp Reader](https://github.com/experiments/bmp_reader)
+And don't forget to unstar all of my repos, if you stared them before.
+
+#### References:
 If you want to read something more detailed and well written - check these links:
 * [BMP file format on Wikipedia](https://en.wikipedia.org/wiki/BMP_file_format)
 * [BMP on MSDN](https://msdn.microsoft.com/en-us/library/dd183377.aspx)
