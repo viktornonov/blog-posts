@@ -219,13 +219,19 @@ col = 1
 ```
 
 1. Find the byte that stores the pixel by dividing col by 8. (pixels 0-7 are stored in the first byte, pixels 8-15 ares stored in the second byte, etc.)
+
 byte_array_index = 0
 
 2. Extract the specific pixel's bit by using bitmask (pixel_mask) and &
+
 This is the mask:
+
 1 << (7 - (col % 8));
+
 when we want col 0 we need the mask 1000 0000 (shifted 7 times)
+
 when we want col 1 we need the mask 0100 0000 (shifted 6 times)
+
 etc.
 
 3. Compare the current byte with mask by & (bitwise AND) will give the pixel value
