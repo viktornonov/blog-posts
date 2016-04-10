@@ -1,4 +1,4 @@
-# Convert BMP image (1 bit) to ASCII art
+# Convert BMP image (1 bpp) to ASCII art
 ## BMP File format
 
 The BMP file format is a raster graphics image file format. It's pretty straight forward to implement a reader for it. (Although it took me 5 days)
@@ -31,13 +31,13 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 424d 4800 0000 0000 0000 3e00 0000
 ```
 
-424d      - ASCII codes of B and M. Every BMP file that you create start with these two symbols, unless you use OS/2.
+__424d__      - ASCII codes of B and M. Every BMP file that you create start with these two symbols, unless you use OS/2.
 
-4800 0000 - The size of the file in bytes -> 72 bytes.
+__4800 0000__ - The size of the file in bytes -> 72 bytes.
 
-0000 0000 - Reserved for the app that creates the images.
+__0000 0000__ - Reserved for the app that creates the images.
 
-3e00 0000 - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel array starts on the 62nd byte of the file.
+__3e00 0000__ - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel array starts on the 62nd byte of the file.
 
 * DIB header (Bitmap information header):
 ```
@@ -46,28 +46,32 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 0000 0000 0000 0000
 ```
 
-2800 0000 - The size of the DIB header = 28 = 40 bytes
-0200 0000 - Width in pixels = 2px
-0200 0000 - Height in pixels = 2px
-0100      - Number of planes = 1
-0100      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
-0000 0000 - Compression method. 0 means none
-0a00 0000 - Size of the pixel array = 10 bytes
-2d0c 0000 - Horizontal resolution in inches per meter 0c2d = 3117 = 3117/39.3701 = 79.17 pixels per inch (blame photoshop for the weird values)
-120b 0000 - Vertical resoulution in inches per meter  0b12 = 2834 = 2834/39.3701 = 71.98 pixels per inch
-0000 0000 - number of the colors in the color pallette
-0000 0000 - the number of important colors (usually ignore and I have no idea what is it for)
+__2800 0000__ - The size of the DIB header = 28 = 40 bytes
+
+__0200 0000__ - Width in pixels = 2px
+__0200 0000__ - Height in pixels = 2px
+__0100__      - Number of planes = 1
+__0100__      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
+__0000 0000__ - Compression method. 0 means none
+__0a00 0000__ - Size of the pixel array = 10 bytes
+__2d0c 0000__ - Horizontal resolution in inches per meter 0c2d = 3117 = 3117/39.3701 = 79.17 pixels per inch (blame photoshop for the weird values)
+__120b 0000__ - Vertical resoulution in inches per meter  0b12 = 2834 = 2834/39.3701 = 71.98 pixels per inch
+__0000 0000__ - number of the colors in the color pallette
+__0000 0000__ - the number of important colors (usually ignore and I have no idea what is it for)
 
 
 * Color table
 ```
 ffff ff00 0000 0000
 ```
-ffff ff00 - White color
-0000 0000 - Black color
+__ffff ff00__ - White color
+
+__0000 0000__ - Black color
 
 The color table/pallette is mandatory for bitmaps with color depth < 8 bpp.
+
 The colors are represented in the following format, which is in [little endian order](https://en.wikipedia.org/wiki/Endianness).
+
 [BLUE][GREEN][RED][ALPHA]
 
 * Pixel array
@@ -80,11 +84,15 @@ The pixels in the array are stored upside down (starts from bottom left corner (
 
 The bits representing the bitmap pixels are organized in rows. The size of each row is rounded up to a multiple of 4 bytes (a 32-bit DWORD) by padding, which are 0s normally.
 
+
 In the example image you can see that the data that means something is placed in the first 2 bits of each row:
+
 The bottom row - 4000 0000, which in binary is __01__00 0000 0000 0000 0000 0000 0000 0000
+
 The top row - 8000 0000, in binary is __10__00 0000 0000 0000 0000 0000 0000 0000 0000
 
 Bits that follow the first two are all padding.
+
 The bottom row shows __01__ in first two bits which represents color with index 0 in the color pallette (white) and color with index 1 in the color pallette (Black)
 
 * * *
@@ -129,7 +137,8 @@ length = 4
 ```
 
 *slice* will become { 0x2E, 0x00, 0x00, 0x00 }
-by calling *lsb_to_int* with *slice* will get the decimal value of 0x2E (46)
+
+By calling *lsb_to_int* with *slice* will get the decimal value of 0x2E (46)
 
 
 This is the implementation of the *lsb_to_int* function.
@@ -167,7 +176,7 @@ Example:
 For a pixel array of a 1 bpp BMP with width 2px and height 2px we'll need two rows 2 bits long each, but with <span style="color: blue">the padding</span>, the pixel array is a bit longer than that:
 
 ```asm
-0x40 0x00 0x00 0x00 #Notice that every digit here is in hexadecimal, which means that 0x40 is 0100 000 in binary
+0x40 0x00 0x00 0x00 ;Notice that every digit here is in hexadecimal, which means that 0x40 is 0100 000 in binary
 0x80 0x00 0x00 0x00
 ```
 
