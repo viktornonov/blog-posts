@@ -49,14 +49,23 @@ __3e00 0000__ - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel
 __2800 0000__ - The size of the DIB header = 28 = 40 bytes
 
 __0200 0000__ - Width in pixels = 2px
+
 __0200 0000__ - Height in pixels = 2px
+
 __0100__      - Number of planes = 1
+
 __0100__      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
+
 __0000 0000__ - Compression method. 0 means none
+
 __0a00 0000__ - Size of the pixel array = 10 bytes
+
 __2d0c 0000__ - Horizontal resolution in inches per meter 0c2d = 3117 = 3117/39.3701 = 79.17 pixels per inch (blame photoshop for the weird values)
+
 __120b 0000__ - Vertical resoulution in inches per meter  0b12 = 2834 = 2834/39.3701 = 71.98 pixels per inch
+
 __0000 0000__ - number of the colors in the color pallette
+
 __0000 0000__ - the number of important colors (usually ignore and I have no idea what is it for)
 
 
@@ -87,9 +96,9 @@ The bits representing the bitmap pixels are organized in rows. The size of each 
 
 In the example image you can see that the data that means something is placed in the first 2 bits of each row:
 
-The bottom row - *4000 0000*, which in binary is *01*00 0000 0000 0000 0000 0000 0000 0000
+The bottom row - *4000 0000*, which in binary is **01**00 0000 0000 0000 0000 0000 0000 0000
 
-The top row - *8000 0000*, in binary is *10*00 0000 0000 0000 0000 0000 0000 0000 0000
+The top row - *8000 0000*, in binary is **10**00 0000 0000 0000 0000 0000 0000 0000 0000
 
 Bits that follow the first two are all padding.
 
