@@ -1,11 +1,16 @@
-# Convert BMP image (1 bpp) to ASCII art
+# Convert BMP image (1 bpp) to ASCII image
 ## BMP File format
 
 The BMP file format is a raster graphics image file format. It's pretty straight forward to implement a reader for it. (Although it took me 5 days)
+
 It has 4 main parts:
+
 * __BMP header__ - stores general information about the file like size of the file
+
 * __DIB header__ - bitmap information header. Stores width, height, bits/pixel encoding etc.
+
 * __Color table__ - lists all the colors used in the image
+
 * __Pixel array__ - describes the image's pixels
 
 ### Example (2x2 BMP Image (1 bit per pixel encoded))
@@ -18,7 +23,8 @@ That's the __zoomed__ version of the image that's the example is for:
 Simple 2x2 bmp image with white and black pixel on the top row and black and white pixel on the bottom row.
 
 Below you can see hexdump of the image. All the values are in hexadecimal(thank you cpt obvious). Also they are in LSB (least significant byte first), which means 48 00 00 00 should be read as 00 00 00 48:
-```
+
+```text
 424d 4800 0000 0000 0000 3e00 0000 2800
 0000 0200 0000 0200 0000 0100 0100 0000
 0000 0a00 0000 2d0c 0000 120b 0000 0000
@@ -26,95 +32,99 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 0000 8000 0000 0000
 ```
 
-* BMP header:
-```
-424d 4800 0000 0000 0000 3e00 0000
-```
+* __BMP header:__
 
-__424d__      - ASCII codes of B and M. Every BMP file that you create start with these two symbols, unless you use OS/2.
+  ```text
+  424d 4800 0000 0000 0000 3e00 0000
+  ```
 
-__4800 0000__ - The size of the file in bytes -> 72 bytes.
+  __424d__      - ASCII codes of B and M. Every BMP file that you create start with these two symbols, unless you use OS/2.
 
-__0000 0000__ - Reserved for the app that creates the images.
+  __4800 0000__ - The size of the file in bytes -> 72 bytes.
 
-__3e00 0000__ - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel array starts on the 62nd byte of the file.
+  __0000 0000__ - Reserved for the app that creates the images.
 
-* DIB header (Bitmap information header):
-```
-2800 0000 0200 0000 0200 0000 0100 0100
-0000 0000 0a00 0000 2d0c 0000 120b 0000
-0000 0000 0000 0000
-```
+  __3e00 0000__ - Offset that the pixel array starts -> 3e = 62 bytes -> the pixel array starts on the 62nd byte of the file.
 
-__2800 0000__ - The size of the DIB header = 28 = 40 bytes
+* __DIB header (Bitmap information header):__
 
-__0200 0000__ - Width in pixels = 2px
+  ```text
+  2800 0000 0200 0000 0200 0000 0100 0100
+  0000 0000 0a00 0000 2d0c 0000 120b 0000
+  0000 0000 0000 0000
+  ```
 
-__0200 0000__ - Height in pixels = 2px
+  __2800 0000__ - The size of the DIB header = 28 = 40 bytes
 
-__0100__      - Number of planes = 1
+  __0200 0000__ - Width in pixels = 2px
 
-__0100__      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
+  __0200 0000__ - Height in pixels = 2px
 
-__0000 0000__ - Compression method. 0 means none
+  __0100__      - Number of planes = 1
 
-__0a00 0000__ - Size of the pixel array = 10 bytes
+  __0100__      - How many bits are used to encode a pixel = 1 bpp (bits per pixel), Aka as Color depth. The higher the value of this field is the more colors are used in the image.
 
-__2d0c 0000__ - Horizontal resolution in inches per meter 0c2d = 3117 = 3117/39.3701 = 79.17 pixels per inch (blame photoshop for the weird values)
+  __0000 0000__ - Compression method. 0 means none
 
-__120b 0000__ - Vertical resoulution in inches per meter  0b12 = 2834 = 2834/39.3701 = 71.98 pixels per inch
+  __0a00 0000__ - Size of the pixel array = 10 bytes
 
-__0000 0000__ - number of the colors in the color pallette
+  __2d0c 0000__ - Horizontal resolution in inches per meter 0c2d = 3117 = 3117/39.3701 = 79.17 pixels per inch (blame photoshop for the weird values)
 
-__0000 0000__ - the number of important colors (usually ignore and I have no idea what is it for)
+  __120b 0000__ - Vertical resoulution in inches per meter  0b12 = 2834 = 2834/39.3701 = 71.98 pixels per inch
 
+  __0000 0000__ - number of the colors in the color pallette
 
-* Color table
-```
-ffff ff00 0000 0000
-```
-__ffff ff00__ - White color
-
-__0000 0000__ - Black color
-
-The color table/pallette is mandatory for bitmaps with color depth < 8 bpp.
-
-The colors are represented in the following format, which is in [little endian order](https://en.wikipedia.org/wiki/Endianness).
-
-[BLUE][GREEN][RED][ALPHA]
-
-* Pixel array
-```
-4000 0000 8000 0000 0000
-```
-The pixel array presents the actual pixel data. The image in the example is with color depth 1bpp, so every pixel in the pixel array will show the index of the color in the color table above. 0 will mean the color with index 0 in the color table, which is white and 1 will mean the second color in the color table - black.
-
-The pixels in the array are stored upside down (starts from bottom left corner (left-to-right) (bottom-to-top))
-
-The bits representing the bitmap pixels are organized in rows. The size of each row is rounded up to a multiple of 4 bytes (a 32-bit DWORD) by padding, which are 0s normally.
+  __0000 0000__ - the number of important colors (usually ignore and I have no idea what is it for)
 
 
-In the example image you can see that the data that means something is placed in the first 2 bits of each row:
+* __Color table__
+  ```
+  ffff ff00 0000 0000
+  ```
+  __ffff ff00__ - White color
 
-The bottom row - *4000 0000*, which in binary is **01**00 0000 0000 0000 0000 0000 0000 0000
+  __0000 0000__ - Black color
 
-The top row - *8000 0000*, in binary is **10**00 0000 0000 0000 0000 0000 0000 0000 0000
+  The color table/pallette is mandatory for bitmaps with color depth < 8 bpp.
 
-Bits that follow the first two are all padding.
+  The colors are represented in the following format, which is in [little endian order](https://en.wikipedia.org/wiki/Endianness).
 
-The bottom row shows __01__ in first two bits which represents color with index 0 in the color pallette (white) and color with index 1 in the color pallette (Black)
+  [BLUE][GREEN][RED][ALPHA]
+
+* __Pixel array__
+
+  ```text
+  4000 0000 8000 0000 0000
+  ```
+
+  The pixel array presents the actual pixel data. The image in the example is with color depth 1bpp, so every pixel in the pixel array will show the index of the color in the color table above. 0 will mean the color with index 0 in the color table, which is white and 1 will mean the second color in the color table - black.
+
+  The pixels in the array are stored upside down (starts from bottom left corner (left-to-right) (bottom-to-top))
+
+  The bits representing the bitmap pixels are organized in rows. The size of each row is rounded up to a multiple of 4 bytes (a 32-bit DWORD) by padding, which are 0s normally.
+
+
+  In the example image you can see that the data that means something is placed in the first 2 bits of each row:
+
+  The bottom row - *4000 0000*, which in binary is **01**00 0000 0000 0000 0000 0000 0000 0000
+
+  The top row - *8000 0000*, in binary is **10**00 0000 0000 0000 0000 0000 0000 0000 0000
+
+  Bits that follow the first two are all padding.
+
+  The bottom row shows __01__ in first two bits which represents color with index 0 in the color pallette (white) and color with index 1 in the color pallette (Black)
 
 * * *
 
 ## Let's get down to bussiness
 
-In case to implement an app that can read 1 bit BMP file I'll need to implement the following functionalities:
+In the case you want to implement an app that can read 1 bit BMP file you'll need to implement the following functionalities:
 
 ### Reading the BMP file header
 Actually I don't need anything from the the file header.
 
 ### Reading the DIP header
-I need to extract the width, height, the size of the pixel array, so I can allocate memory. I'll use the following structure to keep the DIP header:
+I need to extract the width, height, the size of the pixel array, so I can allocate memory for the pixel array. I'll use the following structure to keep the DIP header:
 
 ```c
 struct DibHeader {
@@ -182,6 +192,7 @@ Real deal here. The tricky thing will be to extract the bits from the bytes. In 
 As I said earlier the bits representing the bitmap pixels are packed in rows. Each row's size is rounded up to a multiple of 4 bytes by padding (in most cases is 0x00).
 
 Example:
+
 For a pixel array of a 1 bpp BMP with width 2px and height 2px we'll need two rows 2 bits long each, but with <span style="color: blue">the padding</span>, the pixel array is a bit longer than that:
 
 ```asm
@@ -219,11 +230,13 @@ col = 1
 ```
 
 1. Find the byte that stores the pixel by dividing col by 8. (pixels 0-7 are stored in the first byte, pixels 8-15 ares stored in the second byte, etc.)
+
   ```
   byte_array_index = 0
   ```
 
 2. Extract the specific pixel's bit by using bitmask (pixel_mask) and &
+
   ```
   This is the mask:
   1 << (7 - (col % 8));
@@ -259,4 +272,6 @@ And don't forget to unstar all of my repos, if you stared them before.
 If you want to read something more detailed and well written - check these links:
 * [BMP file format on Wikipedia](https://en.wikipedia.org/wiki/BMP_file_format)
 * [BMP on MSDN](https://msdn.microsoft.com/en-us/library/dd183377.aspx)
+
+Thanks to [Codi](c0di.com) for the review.
 
