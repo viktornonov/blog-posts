@@ -183,7 +183,7 @@ Summing the values after we shift them:
   00 00 10 00 ; == ((int)lsb_array[1] << 8)
   00 01 00 00 ; == ((int)lsb_array[1] << 16)
 + 0F 00 00 00 ; == ((int)lsb_array[1] << 24)
-  -=-=-=-=-=-=
+; ------------
   OF 01 10 FF ; normal order
 ```
 
