@@ -78,7 +78,7 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 
 
 * __Color table__
-  ```
+  ```markup
   ffff ff00 0000 0000
   ```
   __ffff ff00__ - White color
@@ -149,7 +149,7 @@ int extract_value_from_byte_array(unsigned char* byte_array, int start_position,
 
 Example:
 
-```
+```markup
 byte_array = { 0x00, 0x2E, 0x00, 0x00, 0x00, 0x00 }
 start_position = 1
 length = 4
@@ -176,13 +176,13 @@ Here's an example of this function:
 
 lsb_array = { 'FF', '10', '01', '0F' }
 
-```hex
-  00 00 00 FF # == (int) lsb_array[0]
-  00 00 10 00 # == ((int)lsb_array[1] << 8)
-  00 01 00 00 # == ((int)lsb_array[1] << 16)
-+ 0F 00 00 00 # == ((int)lsb_array[1] << 24)
+```nasm
+  00 00 00 FF ; == (int) lsb_array[0]
+  00 00 10 00 ; == ((int)lsb_array[1] << 8)
+  00 01 00 00 ; == ((int)lsb_array[1] << 16)
++ 0F 00 00 00 ; == ((int)lsb_array[1] << 24)
 --------------
-  OF 01 10 FF # normal order
+  OF 01 10 FF ; normal order
 ```
 
 ### Reading the pixel array
@@ -223,7 +223,7 @@ int extract_pixel(unsigned char* byte_array, int scan_line_size_in_bytes,
 }
 ```
 
-```
+```markup
 scan_line_size_in_bytes = 4 (bytes)
 row = 0
 col = 1
@@ -231,13 +231,13 @@ col = 1
 
 1. Find the byte that stores the pixel by dividing col by 8. (pixels 0-7 are stored in the first byte, pixels 8-15 ares stored in the second byte, etc.)
 
-  ```
+  ```markup
   byte_array_index = 0
   ```
 
 2. Extract the specific pixel's bit by using bitmask (pixel_mask) and &
 
-  ```
+  ```markup
   This is the mask:
   1 << (7 - (col % 8));
   when we want col 0 we need the mask 1000 0000 (shifted 7 times)
