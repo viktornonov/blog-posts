@@ -176,12 +176,14 @@ Here's an example of this function:
 
 lsb_array = { 'FF', '10', '01', '0F' }
 
+Summing the values after we shift them:
+
 ```nasm
   00 00 00 FF ; == (int) lsb_array[0]
   00 00 10 00 ; == ((int)lsb_array[1] << 8)
   00 01 00 00 ; == ((int)lsb_array[1] << 16)
-+ 0F 00 00 00 ; == ((int)lsb_array[1] << 24)
---------------
+  0F 00 00 00 ; == ((int)lsb_array[1] << 24)
+===============
   OF 01 10 FF ; normal order
 ```
 
@@ -270,7 +272,9 @@ And don't forget to unstar all of my repos, if you stared them before.
 
 #### References:
 If you want to read something more detailed and well written - check these links:
+
 * [BMP file format on Wikipedia](https://en.wikipedia.org/wiki/BMP_file_format)
+
 * [BMP on MSDN](https://msdn.microsoft.com/en-us/library/dd183377.aspx)
 
 Thanks to [Codi](http://c0di.com) for the review.
