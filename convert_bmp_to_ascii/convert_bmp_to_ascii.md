@@ -24,7 +24,7 @@ Simple 2x2 bmp image with white and black pixel on the top row and black and whi
 
 Below you can see hexdump of the image. All the values are in hexadecimal(thank you cpt obvious). Also they are in LSB (least significant byte first), which means 48 00 00 00 should be read as 00 00 00 48:
 
-```text
+```markup
 424d 4800 0000 0000 0000 3e00 0000 2800
 0000 0200 0000 0200 0000 0100 0100 0000
 0000 0a00 0000 2d0c 0000 120b 0000 0000
@@ -34,7 +34,7 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 
 * __BMP header:__
 
-  ```text
+  ```markup
   424d 4800 0000 0000 0000 3e00 0000
   ```
 
@@ -48,7 +48,7 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 
 * __DIB header (Bitmap information header):__
 
-  ```text
+  ```markup
   2800 0000 0200 0000 0200 0000 0100 0100
   0000 0000 0a00 0000 2d0c 0000 120b 0000
   0000 0000 0000 0000
@@ -93,7 +93,7 @@ Below you can see hexdump of the image. All the values are in hexadecimal(thank 
 
 * __Pixel array__
 
-  ```text
+  ```markup
   4000 0000 8000 0000 0000
   ```
 
@@ -195,7 +195,7 @@ Example:
 
 For a pixel array of a 1 bpp BMP with width 2px and height 2px we'll need two rows 2 bits long each, but with <span style="color: blue">the padding</span>, the pixel array is a bit longer than that:
 
-```asm
+```nasm
 0x40 0x00 0x00 0x00 ;Notice that every digit here is in hexadecimal, which means that 0x40 is 0100 000 in binary
 0x80 0x00 0x00 0x00
 ```
