@@ -273,5 +273,5 @@ If you want to read something more detailed and well written - check these links
 * [BMP file format on Wikipedia](https://en.wikipedia.org/wiki/BMP_file_format)
 * [BMP on MSDN](https://msdn.microsoft.com/en-us/library/dd183377.aspx)
 
-Thanks to [Codi](c0di.com) for the review.
+Thanks to [Codi](http://c0di.com) for the review.
 
