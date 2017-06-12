@@ -13,13 +13,13 @@ So I started wondering where this address(0x007fe2259a7d10) comes from. That pro
 
 In Ruby everything is an object and every variable is a reference to an object. Also it's a dynamic typed language. On the contrary, C is a static typed language and object oriented stuff is not so much in the game there. So how are the two languages able to 'communicate' with each other?
 
-To represent Ruby objects in C, the type VALUE is used. If you have a new school machine it will be alias for  ```uintptr_t``` and it's defined [here](https://github.com/ruby/ruby/blob/ruby_2_4/include/ruby/ruby.h#L79).
+To represent Ruby objects in C, the type VALUE is used. If you have a new school machine it will be alias for  **uintptr\_t** and it's defined [here](https://github.com/ruby/ruby/blob/ruby_2_4/include/ruby/ruby.h#L79).
 
 ```c
 typedef uintptr_t VALUE;
 ```
 
-The type **uintptr_t** is added with C99 and it should be big enough to hold any pointer. Although it is an unsigned integer type, the name uint**ptr**_t shows the intention of using it as pointer store. Another cool thing about it - it's portable.
+The type **uintptr\_t** is added with C99 and it should be big enough to hold any pointer. Although it is an unsigned integer type, the name uint**ptr**\_t shows the intention of using it as pointer store. Another cool thing about it - it's portable.
 
 At this point I started suspecting that the address above is the value of the VALUE variable that points to the ViktorsIntellect object, but wanted to prove it.
 
